@@ -6,6 +6,8 @@ import com.sharesafe.desktop.service.FileService;
 import com.sharesafe.desktop.service.RsaService;
 import com.sharesafe.shared.RsaUtil;
 import com.sharesafe.shared.TransferData;
+import com.sharesafe.shared.model.DownloadRequest;
+import com.sharesafe.shared.model.DownloadResponse;
 import io.datafx.controller.FXMLController;
 import io.datafx.controller.flow.action.ActionMethod;
 import io.datafx.controller.flow.action.ActionTrigger;
@@ -16,7 +18,6 @@ import javafx.scene.control.ListView;
 import javafx.stage.FileChooser;
 import org.apache.commons.io.FileUtils;
 import retrofit2.Call;
-import retrofit2.Response;
 
 import javax.annotation.PostConstruct;
 import java.io.File;
@@ -63,11 +64,12 @@ public class DirectoryListingController {
 
     @ActionMethod("download")
     public void download() throws IOException {
-        String filename = filesView.getFocusModel().getFocusedItem();
-        Call<TransferData> call = fileService.downloadFiles(filename);
-        Response<TransferData> response = call.execute();
-        TransferData data = response.body();
+        DownloadRequest request = new DownloadRequest()
+                .setFilename(filesView.getFocusModel().getFocusedItem())
+                ._setPublicKey(pair.getPublic());
+        Call<DownloadResponse> call = fileService.downloadFiles(request);
+        DownloadResponse response = call.execute().body();
         File file = chooser.showSaveDialog(SharesafeDesktopApplication.primaryStage);
-        FileUtils.writeByteArrayToFile(file, RsaUtil.decodeDecrypt(data.getData(), pair.getPrivate()));
+        FileUtils.writeByteArrayToFile(file, response._getData(pair.getPrivate()));
     }
 }

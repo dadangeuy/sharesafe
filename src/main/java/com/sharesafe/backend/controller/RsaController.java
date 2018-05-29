@@ -2,6 +2,7 @@ package com.sharesafe.backend.controller;
 
 import com.sharesafe.backend.service.RsaService;
 import com.sharesafe.shared.RsaUtil;
+import com.sharesafe.shared.TransferData;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,8 +24,8 @@ public class RsaController {
     }
 
     @PostMapping("client")
-    public ResponseEntity<?> setClientKey(@RequestBody String clientKeyEnc, HttpSession session) throws InvalidKeySpecException {
-        PublicKey key = RsaUtil.decodePublic(clientKeyEnc);
+    public ResponseEntity<?> setClientKey(@RequestBody TransferData data, HttpSession session) throws InvalidKeySpecException {
+        PublicKey key = RsaUtil.decodePublic(data.getData());
         session.setAttribute("client-key", key);
         return ResponseEntity.ok().build();
     }

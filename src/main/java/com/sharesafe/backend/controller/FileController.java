@@ -2,6 +2,7 @@ package com.sharesafe.backend.controller;
 
 import com.sharesafe.backend.service.RsaService;
 import com.sharesafe.shared.RsaUtil;
+import com.sharesafe.shared.TransferData;
 import org.apache.commons.io.FileUtils;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -29,11 +30,11 @@ public class FileController {
         return ResponseEntity.ok(Objects.requireNonNull(folder.list()));
     }
 
-    @PostMapping("upload/{filename}")
-    public ResponseEntity<?> upload(@PathVariable String filename, @RequestBody String data) throws IOException {
-        byte[] dataByte = decoder.decode(data);
+    @PostMapping("upload")
+    public ResponseEntity<?> upload(@RequestBody TransferData data) throws IOException {
+        byte[] dataByte = decoder.decode(data.getData());
         dataByte = RsaUtil.decrypt(dataByte, service.getServerPrivateKey());
-        FileUtils.writeByteArrayToFile(new File(basePath + filename), dataByte);
+        FileUtils.writeByteArrayToFile(new File(basePath + data.getName()), dataByte);
         return ResponseEntity.ok().build();
     }
 
@@ -43,7 +44,7 @@ public class FileController {
         byte[] dataByte = FileUtils.readFileToByteArray(new File(basePath + filename));
         dataByte = RsaUtil.encrypt(dataByte, key);
         String data = encoder.encodeToString(dataByte);
-        return ResponseEntity.ok(data);
+        return ResponseEntity.ok(new TransferData(filename, data));
     }
 
     private PublicKey loadClientKey(HttpSession session) throws IOException {

@@ -62,6 +62,10 @@ public class RsaUtil {
         return factory.generatePublic(new X509EncodedKeySpec(decoder.decode(encoded)));
     }
 
+    public static String encodeEncrypt(byte[] data, PublicKey key) {
+        return encoder.encodeToString(encrypt(data, key));
+    }
+
     public static byte[] encrypt(byte[] data, PublicKey key) {
         try {
             Cipher cipher = Cipher.getInstance("RSA");
@@ -70,6 +74,10 @@ public class RsaUtil {
         } catch (IllegalBlockSizeException | NoSuchPaddingException | NoSuchAlgorithmException | InvalidKeyException | BadPaddingException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public static byte[] decodeDecrypt(String data, PrivateKey key) {
+        return decrypt(decoder.decode(data), key);
     }
 
     public static byte[] decrypt(byte[] data, PrivateKey key) {

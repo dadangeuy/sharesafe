@@ -24,9 +24,10 @@ public class RsaController {
     }
 
     @PostMapping("client")
-    public ResponseEntity<?> setClientKey(@RequestBody TransferData data, HttpSession session) throws InvalidKeySpecException {
+    public ResponseEntity<?> setClientKey(HttpSession session, @RequestBody TransferData data) throws InvalidKeySpecException {
+        System.out.println(session.getId());
         PublicKey key = RsaUtil.decodePublic(data.getData());
-        session.setAttribute("client-key", key);
+        service.addClientKey(session.getId(), key);
         return ResponseEntity.ok().build();
     }
 }

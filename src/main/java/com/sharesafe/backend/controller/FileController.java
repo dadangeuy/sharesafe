@@ -39,7 +39,7 @@ public class FileController {
     }
 
     @GetMapping("download/{filename}")
-    public ResponseEntity<?> download(@PathVariable String filename, HttpSession session) throws IOException {
+    public ResponseEntity<?> download(HttpSession session, @PathVariable String filename) throws IOException {
         PublicKey key = loadClientKey(session);
         byte[] dataByte = FileUtils.readFileToByteArray(new File(basePath + filename));
         dataByte = RsaUtil.encrypt(dataByte, key);
@@ -48,7 +48,8 @@ public class FileController {
     }
 
     private PublicKey loadClientKey(HttpSession session) throws IOException {
-        PublicKey key = (PublicKey) session.getAttribute("client-key");
+        System.out.println(session.getId());
+        PublicKey key = service.getClientKey(session.getId());
         if (key == null) throw new IOException("Client Key Not Found (set /rsa/client first)");
         return key;
     }

@@ -66,7 +66,7 @@ public class RsaUtil {
         try {
             Cipher cipher = Cipher.getInstance("RSA");
             cipher.init(Cipher.ENCRYPT_MODE, key);
-            return executeEncryptCipher(cipher, data, encrypt_block);
+            return execute(cipher, data, encrypt_block);
         } catch (IllegalBlockSizeException | NoSuchPaddingException | NoSuchAlgorithmException | InvalidKeyException | BadPaddingException e) {
             throw new RuntimeException(e);
         }
@@ -76,30 +76,19 @@ public class RsaUtil {
         try {
             Cipher cipher = Cipher.getInstance("RSA");
             cipher.init(Cipher.DECRYPT_MODE, key);
-            return executeDecryptCipher(cipher, data, decrypt_block);
+            return execute(cipher, data, decrypt_block);
         } catch (NoSuchAlgorithmException | IllegalBlockSizeException | BadPaddingException | NoSuchPaddingException | InvalidKeyException e) {
             throw new RuntimeException(e);
         }
     }
 
-    private static byte[] executeEncryptCipher(Cipher cipher, byte[] original, int blockSize) throws BadPaddingException, IllegalBlockSizeException {
+    private static byte[] execute(Cipher cipher, byte[] original, int blockSize) throws BadPaddingException, IllegalBlockSizeException {
         List<Byte> result = new LinkedList<>();
         for (int i = 0; i < original.length; i += blockSize) {
             int size = Math.min(blockSize, original.length - i);
             byte[] block = splitBlock(original, i, size);
-            byte[] encryptedBlock = cipher.doFinal(block);
-            result.addAll(Bytes.asList(encryptedBlock));
-        }
-        return Bytes.toArray(result);
-    }
-
-    private static byte[] executeDecryptCipher(Cipher cipher, byte[] original, int blockSize) throws BadPaddingException, IllegalBlockSizeException {
-        List<Byte> result = new LinkedList<>();
-        for (int i = 0; i < original.length; i += blockSize) {
-            int size = Math.min(blockSize, original.length - i);
-            byte[] block = splitBlock(original, i, size);
-            byte[] encryptedBlock = cipher.doFinal(block);
-            result.addAll(Bytes.asList(encryptedBlock));
+            byte[] finalBlock = cipher.doFinal(block);
+            result.addAll(Bytes.asList(finalBlock));
         }
         return Bytes.toArray(result);
     }

@@ -11,6 +11,7 @@ import java.io.File;
 import java.io.IOException;
 import java.security.PublicKey;
 import java.util.Base64;
+import java.util.Objects;
 
 @RestController
 @RequestMapping("file")
@@ -21,6 +22,12 @@ public class FileController {
     private String basePath = "/home/dadangeuy/Shared/";
 
     public FileController(RsaService service) {this.service = service;}
+
+    @GetMapping("list")
+    public ResponseEntity<?> list() {
+        File folder = new File(basePath);
+        return ResponseEntity.ok(Objects.requireNonNull(folder.list()));
+    }
 
     @PostMapping("upload/{filename}")
     public ResponseEntity<?> upload(@PathVariable String filename, @RequestBody String data) throws IOException {

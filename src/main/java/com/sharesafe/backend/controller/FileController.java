@@ -3,6 +3,7 @@ package com.sharesafe.backend.controller;
 import com.sharesafe.backend.service.RsaService;
 import com.sharesafe.shared.RsaUtil;
 import com.sharesafe.shared.TransferData;
+import com.sharesafe.shared.model.RsaTransferData;
 import org.apache.commons.io.FileUtils;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -11,6 +12,7 @@ import javax.servlet.http.HttpSession;
 import java.io.File;
 import java.io.IOException;
 import java.security.PublicKey;
+import java.security.spec.InvalidKeySpecException;
 import java.util.Base64;
 import java.util.Objects;
 
@@ -38,13 +40,11 @@ public class FileController {
         return ResponseEntity.ok().build();
     }
 
-    @GetMapping("download/{filename}")
-    public ResponseEntity<?> download(HttpSession session, @PathVariable String filename) throws IOException {
-        PublicKey key = loadClientKey(session);
-        byte[] dataByte = FileUtils.readFileToByteArray(new File(basePath + filename));
-        dataByte = RsaUtil.encrypt(dataByte, key);
-        String data = encoder.encodeToString(dataByte);
-        return ResponseEntity.ok(new TransferData(filename, data));
+    @PostMapping("download")
+    public ResponseEntity<?> download(@RequestBody RsaTransferData data) throws IOException, InvalidKeySpecException {
+        byte[] dataByte = FileUtils.readFileToByteArray(new File(basePath + data.getFilename()));
+        data._setData(dataByte);
+        return ResponseEntity.ok(data);
     }
 
     private PublicKey loadClientKey(HttpSession session) throws IOException {

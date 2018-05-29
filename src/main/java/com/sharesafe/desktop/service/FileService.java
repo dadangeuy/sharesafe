@@ -1,7 +1,6 @@
 package com.sharesafe.desktop.service;
 
-import com.sharesafe.shared.model.DownloadRequest;
-import com.sharesafe.shared.model.DownloadResponse;
+import com.sharesafe.shared.model.RsaTransferData;
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.GET;
@@ -15,5 +14,5 @@ public interface FileService {
     Call<List<String>> getListFiles();
 
     @POST("file/download")
-    Call<DownloadResponse> downloadFiles(@Body DownloadRequest request);
+    Call<RsaTransferData> downloadFiles(@Body RsaTransferData data);
 }

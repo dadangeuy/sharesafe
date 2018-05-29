@@ -6,8 +6,7 @@ import com.sharesafe.desktop.service.FileService;
 import com.sharesafe.desktop.service.RsaService;
 import com.sharesafe.shared.RsaUtil;
 import com.sharesafe.shared.TransferData;
-import com.sharesafe.shared.model.DownloadRequest;
-import com.sharesafe.shared.model.DownloadResponse;
+import com.sharesafe.shared.model.RsaTransferData;
 import io.datafx.controller.FXMLController;
 import io.datafx.controller.flow.action.ActionMethod;
 import io.datafx.controller.flow.action.ActionTrigger;
@@ -64,11 +63,11 @@ public class DirectoryListingController {
 
     @ActionMethod("download")
     public void download() throws IOException {
-        DownloadRequest request = new DownloadRequest()
+        RsaTransferData request = new RsaTransferData()
                 .setFilename(filesView.getFocusModel().getFocusedItem())
                 ._setPublicKey(pair.getPublic());
-        Call<DownloadResponse> call = fileService.downloadFiles(request);
-        DownloadResponse response = call.execute().body();
+        Call<RsaTransferData> call = fileService.downloadFiles(request);
+        RsaTransferData response = call.execute().body();
         File file = chooser.showSaveDialog(SharesafeDesktopApplication.primaryStage);
         FileUtils.writeByteArrayToFile(file, response._getData(pair.getPrivate()));
     }

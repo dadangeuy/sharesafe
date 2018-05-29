@@ -10,9 +10,15 @@ import java.util.List;
 
 public interface FileService {
 
-    @GET("file/list")
+    @GET("list")
     Call<List<String>> getListFiles();
 
-    @POST("file/download")
-    Call<RsaTransferData> downloadFiles(@Body RsaTransferData data);
+    @POST("key")
+    Call<RsaTransferData> requestKey(@Body RsaTransferData data);
+
+    @POST("upload")
+    Call<Void> uploadFile(@Body RsaTransferData data);
+
+    @POST("download")
+    Call<RsaTransferData> downloadFile(@Body RsaTransferData data);
 }

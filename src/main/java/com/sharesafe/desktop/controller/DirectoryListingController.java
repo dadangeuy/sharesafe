@@ -3,9 +3,7 @@ package com.sharesafe.desktop.controller;
 import com.sharesafe.desktop.SharesafeDesktopApplication;
 import com.sharesafe.desktop.service.ApiService;
 import com.sharesafe.desktop.service.FileService;
-import com.sharesafe.desktop.service.RsaService;
 import com.sharesafe.shared.RsaUtil;
-import com.sharesafe.shared.TransferData;
 import com.sharesafe.shared.model.RsaTransferData;
 import io.datafx.controller.FXMLController;
 import io.datafx.controller.flow.action.ActionMethod;
@@ -22,8 +20,8 @@ import javax.annotation.PostConstruct;
 import java.io.File;
 import java.io.IOException;
 import java.security.KeyPair;
+import java.security.spec.InvalidKeySpecException;
 import java.util.List;
-import java.util.Objects;
 
 @FXMLController("/templates/DirectoryListing.fxml")
 public class DirectoryListingController {
@@ -33,40 +31,40 @@ public class DirectoryListingController {
 
     private final KeyPair pair = RsaUtil.generatePair();
     private final FileChooser chooser = new FileChooser();
-    private final FileService fileService = ApiService.getClient().create(FileService.class);
-    private final RsaService rsaService = ApiService.getClient().create(RsaService.class);
+    private final FileService service = ApiService.getClient().create(FileService.class);
 
     private ObservableList<String> files;
 
     @PostConstruct
     public void init() throws IOException {
         files = filesView.getItems();
-        sendPublicKey();
         populateFiles();
     }
 
-    private void sendPublicKey() throws IOException {
-        String key = RsaUtil.encode(pair.getPublic());
-        rsaService.sendKey(new TransferData("client-key", key)).execute();
-    }
-
     private void populateFiles() throws IOException {
-        Call<List<String>> call = fileService.getListFiles();
-        files.addAll(Objects.requireNonNull(call.execute().body()));
+        List<String> newFiles = service.getListFiles().execute().body();
+        files.clear();
+        files.addAll(newFiles);
     }
 
     @ActionMethod("upload")
-    public void upload() throws IOException {
+    public void upload() throws IOException, InvalidKeySpecException {
         File file = chooser.showOpenDialog(SharesafeDesktopApplication.primaryStage);
         byte[] fileBytes = FileUtils.readFileToByteArray(file);
+        RsaTransferData data = service.requestKey(new RsaTransferData()).execute().body();
+        data._setData(fileBytes);
+        data.setFilename(file.getName());
+        service.uploadFile(data).execute();
+        populateFiles();
     }
 
     @ActionMethod("download")
-    public void download() throws IOException {
+    public void download() throws IOException, InvalidKeySpecException {
         RsaTransferData request = new RsaTransferData()
                 .setFilename(filesView.getFocusModel().getFocusedItem())
                 ._setPublicKey(pair.getPublic());
-        Call<RsaTransferData> call = fileService.downloadFiles(request);
+        request._getPublicKey();
+        Call<RsaTransferData> call = service.downloadFile(request);
         RsaTransferData response = call.execute().body();
         File file = chooser.showSaveDialog(SharesafeDesktopApplication.primaryStage);
         FileUtils.writeByteArrayToFile(file, response._getData(pair.getPrivate()));

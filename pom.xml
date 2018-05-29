@@ -9,7 +9,7 @@
     <packaging>jar</packaging>
 
     <name>sharesafe-backend</name>
-    <description>Secure FIle Sharing</description>
+    <description>Secure File Sharing</description>
 
     <parent>
         <groupId>org.springframework.boot</groupId>

@@ -9,21 +9,21 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.security.KeyPair;
 import java.security.spec.InvalidKeySpecException;
 import java.util.Objects;
 
 @RestController
 public class AppController {
-    private String basePath = "/home/dadangeuy/Shared/";
+    private Path path = Paths.get("/home/dadangeuy/Shared");
     private KeyPair pair = RsaUtil.generatePair();
 
     @GetMapping("list")
     public ResponseEntity<?> list() {
-        File folder = new File(basePath);
-        return ResponseEntity.ok(Objects.requireNonNull(folder.list()));
+        return ResponseEntity.ok(Objects.requireNonNull(path.toFile().list()));
     }
 
     @PostMapping("key")
@@ -33,13 +33,13 @@ public class AppController {
 
     @PostMapping("upload")
     public ResponseEntity<?> upload(@RequestBody RsaTransferData data) throws IOException {
-        FileUtils.writeByteArrayToFile(new File(basePath + data.getFilename()), data._getData(pair.getPrivate()));
+        FileUtils.writeByteArrayToFile(path.resolve(data.getFilename()).toFile(), data._getData(pair.getPrivate()));
         return ResponseEntity.ok().build();
     }
 
     @PostMapping("download")
     public ResponseEntity<?> download(@RequestBody RsaTransferData data) throws IOException, InvalidKeySpecException {
-        byte[] dataByte = FileUtils.readFileToByteArray(new File(basePath + data.getFilename()));
+        byte[] dataByte = FileUtils.readFileToByteArray(path.resolve(data.getFilename()).toFile());
         return ResponseEntity.ok(data._setData(dataByte));
     }
 }

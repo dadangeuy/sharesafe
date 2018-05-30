@@ -14,7 +14,7 @@ public interface FileService {
     Call<List<String>> getListFiles();
 
     @POST("key")
-    Call<RsaTransferData> requestKey(@Body RsaTransferData data);
+    Call<RsaTransferData> requestKey();
 
     @POST("upload")
     Call<Void> uploadFile(@Body RsaTransferData data);

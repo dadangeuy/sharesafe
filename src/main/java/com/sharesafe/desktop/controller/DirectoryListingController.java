@@ -59,7 +59,7 @@ public class DirectoryListingController {
         try {
             File file = chooser.showOpenDialog(SharesafeDesktopApplication.primaryStage);
             byte[] fileBytes = FileUtils.readFileToByteArray(file);
-            RsaTransferData data = service.requestKey(new RsaTransferData()).execute().body();
+            RsaTransferData data = service.requestKey().execute().body();
             data._setData(fileBytes);
             data.setFilename(file.getName());
             service.uploadFile(data).execute();

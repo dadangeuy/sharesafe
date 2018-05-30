@@ -27,8 +27,8 @@ public class AppController {
     }
 
     @PostMapping("key")
-    public ResponseEntity<?> key(@RequestBody RsaTransferData data) {
-        return ResponseEntity.ok(data._setPublicKey(pair.getPublic()));
+    public ResponseEntity<?> key() {
+        return ResponseEntity.ok(new RsaTransferData()._setPublicKey(pair.getPublic()));
     }
 
     @PostMapping("upload")

@@ -66,7 +66,7 @@ public class RsaUtil {
         return encoder.encodeToString(encrypt(data, key));
     }
 
-    public static byte[] encrypt(byte[] data, PublicKey key) {
+    private static byte[] encrypt(byte[] data, PublicKey key) {
         try {
             Cipher cipher = Cipher.getInstance("RSA");
             cipher.init(Cipher.ENCRYPT_MODE, key);
@@ -80,7 +80,7 @@ public class RsaUtil {
         return decrypt(decoder.decode(data), key);
     }
 
-    public static byte[] decrypt(byte[] data, PrivateKey key) {
+    private static byte[] decrypt(byte[] data, PrivateKey key) {
         try {
             Cipher cipher = Cipher.getInstance("RSA");
             cipher.init(Cipher.DECRYPT_MODE, key);

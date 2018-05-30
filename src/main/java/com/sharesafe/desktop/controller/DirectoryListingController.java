@@ -79,6 +79,7 @@ public class DirectoryListingController {
             request._getPublicKey();
             Call<RsaTransferData> call = service.downloadFile(request);
             RsaTransferData response = call.execute().body();
+            chooser.setInitialFileName(response.getFilename());
             File file = chooser.showSaveDialog(SharesafeDesktopApplication.primaryStage);
             FileUtils.writeByteArrayToFile(file, response._getData(pair.getPrivate()));
         } catch (Exception e) {

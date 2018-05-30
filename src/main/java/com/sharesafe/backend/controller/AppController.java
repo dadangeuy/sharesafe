@@ -1,7 +1,7 @@
 package com.sharesafe.backend.controller;
 
+import com.sharesafe.shared.RsaTransferData;
 import com.sharesafe.shared.RsaUtil;
-import com.sharesafe.shared.model.RsaTransferData;
 import org.apache.commons.io.FileUtils;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;

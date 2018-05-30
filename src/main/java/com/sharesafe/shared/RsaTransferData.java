@@ -1,6 +1,5 @@
-package com.sharesafe.shared.model;
+package com.sharesafe.shared;
 
-import com.sharesafe.shared.RsaUtil;
 import lombok.AccessLevel;
 import lombok.Data;
 import lombok.Setter;

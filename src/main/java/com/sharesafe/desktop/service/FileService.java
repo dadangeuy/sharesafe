@@ -1,6 +1,6 @@
 package com.sharesafe.desktop.service;
 
-import com.sharesafe.shared.model.RsaTransferData;
+import com.sharesafe.shared.RsaTransferData;
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.GET;
